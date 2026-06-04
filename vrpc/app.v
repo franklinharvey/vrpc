@@ -20,8 +20,9 @@ mut:
 	config         AppConfig
 	openapi_path   string
 	docs_path      string
-	http_server    http.Server
-	server_thread  ?thread
+	http_server     http.Server
+	server_thread   ?thread
+	pinned_services []voidptr // keeps generated service runtimes alive
 }
 
 pub struct VrpcHandler {
@@ -30,6 +31,11 @@ pub struct VrpcHandler {
 
 pub fn new() &App {
 	return &App{}
+}
+
+// pin_service retains a generated service runtime for the app's lifetime.
+pub fn (mut app App) pin_service(rt voidptr) {
+	app.pinned_services << rt
 }
 
 pub fn (mut app App) use(mw Middleware) {

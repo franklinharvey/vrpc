@@ -205,7 +205,8 @@ pub mut:
 }
 
 pub fn mount_user_service(mut app vrpc.App, mut impl &UserServiceImpl) ! {
-	mut rt := UserServiceRuntime{ impl: impl }
+	rt := &UserServiceRuntime{ impl: impl }
+	app.pin_service(rt)
 	service := vrpc.ServiceDef{
 		name: 'UserService'
 		prefix: '/users'
@@ -245,7 +246,7 @@ pub fn mount_user_service(mut app vrpc.App, mut impl &UserServiceImpl) ! {
 	app.register_service(service)!
 }
 
-pub fn (mut r UserServiceRuntime) create_user_handler(mut ctx vrpc.Context) !vrpc.Response {
+pub fn (r &UserServiceRuntime) create_user_handler(mut ctx vrpc.Context) !vrpc.Response {
 	req := bind_create_user_request(mut ctx)!
 	errs := validate_create_user_request(req)
 	if errs.len > 0 {
@@ -256,7 +257,7 @@ pub fn (mut r UserServiceRuntime) create_user_handler(mut ctx vrpc.Context) !vrp
 	return vrpc.json_response(res)
 }
 
-pub fn (mut r UserServiceRuntime) get_user_handler(mut ctx vrpc.Context) !vrpc.Response {
+pub fn (r &UserServiceRuntime) get_user_handler(mut ctx vrpc.Context) !vrpc.Response {
 	req := bind_get_user_request(mut ctx)!
 	errs := validate_get_user_request(req)
 	if errs.len > 0 {
@@ -267,7 +268,7 @@ pub fn (mut r UserServiceRuntime) get_user_handler(mut ctx vrpc.Context) !vrpc.R
 	return vrpc.json_response(res)
 }
 
-pub fn (mut r UserServiceRuntime) list_users_handler(mut ctx vrpc.Context) !vrpc.Response {
+pub fn (r &UserServiceRuntime) list_users_handler(mut ctx vrpc.Context) !vrpc.Response {
 	req := bind_list_users_request(mut ctx)!
 	errs := validate_list_users_request(req)
 	if errs.len > 0 {

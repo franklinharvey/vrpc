@@ -43,7 +43,8 @@ fn generate_v_server(s Service) string {
 	b.writeln('')
 	mount := v_service_mount_name(s.name)
 	b.writeln('pub fn ${mount}(mut app vrpc.App, mut impl &${v_impl_name(s.name)}) ! {')
-	b.writeln('	mut rt := ${s.name}Runtime{ impl: impl }')
+	b.writeln('	rt := &${s.name}Runtime{ impl: impl }')
+	b.writeln('	app.pin_service(rt)')
 	b.writeln('	service := vrpc.ServiceDef{')
 	b.writeln("		name: '${s.name}'")
 	b.writeln("		prefix: '${s.prefix}'")
@@ -145,7 +146,7 @@ fn v_client_method(s Service, proc Procedure) string {
 
 fn v_handler_method(s Service, proc Procedure) string {
 	st_name := proc.input_type
-	return "pub fn (mut r ${s.name}Runtime) ${proc.name}_handler(mut ctx vrpc.Context) !vrpc.Response {
+	return "pub fn (r &${s.name}Runtime) ${proc.name}_handler(mut ctx vrpc.Context) !vrpc.Response {
 	req := bind_${snake_case(st_name)}(mut ctx)!
 	errs := validate_${snake_case(st_name)}(req)
 	if errs.len > 0 {
