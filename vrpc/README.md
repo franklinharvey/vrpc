@@ -28,7 +28,7 @@ v run ../examples/users
 
 ## Testing
 
-Tests use [veetest](https://github.com/franklinharvey/veetest) (`https://github.com/franklinharvey/veetest@v0.1.0` in `v.mod`).
+Tests use [veetest](https://github.com/franklinharvey/veetest) (`https://github.com/franklinharvey/veetest@v0.2.0` in `v.mod`).
 
 ```bash
 cd vrpc && v install && v -cc gcc test .
