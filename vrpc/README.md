@@ -28,16 +28,18 @@ v run ../examples/users
 
 ## Testing
 
-Tests use V’s `v test` runner plus **vtest** helpers in `vtest.v`: named **suites** and **cases**. See [TESTING.md](TESTING.md).
+Tests use [veetest](../veetest): named **suites** and **cases** on top of `v test`. See [veetest/README.md](../veetest/README.md).
 
 ```bash
+cd veetest && v -cc gcc test .
 cd vrpc && v -cc gcc test .
 ```
 
 ## Layout
 
 ```txt
-vrpc/          — runtime library (module vrpc); vtest.v = suite/case harness
+veetest/         — test harness (module veetest), sibling project
+vrpc/            — runtime library (module vrpc)
 cmd/vgen/        — CLI: generate, inspect, openapi; IR + emitters (V, TS)
 examples/        — hello, users
 ```

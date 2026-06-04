@@ -1,8 +1,10 @@
 module vrpc
 
+import veetest
+
 fn test_openapi() ! {
-	vtest_run(vtest_suite('openapi', [
-		vtest_case('builds paths from service', fn () ! {
+	veetest.run(veetest.suite('openapi', [
+		veetest.case('builds paths from service', fn () ! {
 			service := ServiceDef{
 				name:   'UserService'
 				prefix: '/users'
@@ -27,7 +29,7 @@ fn test_openapi() ! {
 				]
 			}
 			doc := build_openapi_document([service])
-			vtest_eq_str('operation_id', 'create_user', doc.paths['/users'].operations['post'].operation_id)!
+			veetest.eq_str('operation_id', 'create_user', doc.paths['/users'].operations['post'].operation_id)!
 		}),
 	]))!
 }

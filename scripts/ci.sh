@@ -10,6 +10,9 @@ if ! command -v v >/dev/null 2>&1; then
   exit 1
 fi
 
+echo "==> veetest"
+(cd veetest && v -cc gcc test .)
+
 echo "==> vrpc runtime + vgen"
 (cd vrpc && v -cc gcc test .)
 
