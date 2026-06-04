@@ -13,27 +13,27 @@ mut:
 	created_id string
 }
 
-fn users_http_setup(mut st &UsersHttpEnv) ! {
+fn users_http_setup() ! &UsersHttpEnv {
 	repo := users.new_memory_repo()
 	mut svc := users.new_service(repo)
 	mut app := vrpc.new()
 	users.mount_user_service(mut app, mut svc)!
 	app.openapi('/openapi.json')!
 	base := app.listen_background('127.0.0.1:0')!
-	st.app = app
-	st.base = base
 	time.sleep(200 * time.millisecond)
+	return &UsersHttpEnv{
+		app:  app
+		base: base
+	}
 }
 
 fn users_http_teardown(st &UsersHttpEnv) ! {
-	st.app.shutdown() or {}
+	mut app := st.app
+	app.shutdown() or {}
 }
 
 fn test_users_http() ! {
-	mut st := UsersHttpEnv{
-		app: unsafe { nil }
-	}
-	users_http_setup(mut st)!
+	mut st := users_http_setup()!
 	defer {
 		users_http_teardown(st) or {}
 	}
