@@ -8,19 +8,16 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install V
-        run: brew install vlang
+      - uses: vlang/setup-v@v1.4
+        with:
+          stable: true
 
       - name: Test vrpc runtime and vgen
-        env:
-          LIBRARY_PATH: /opt/homebrew/lib:${{ env.LIBRARY_PATH }}
         run: cd vrpc && v test .
 
       - name: Test users example (e2e)
-        env:
-          LIBRARY_PATH: /opt/homebrew/lib:${{ env.LIBRARY_PATH }}
         run: cd examples/users && v test .

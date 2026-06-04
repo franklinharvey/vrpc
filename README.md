@@ -12,8 +12,8 @@ Contract-first HTTP service framework for [V](https://vlang.io), described in [b
 
 ## Requirements
 
-- V 0.5+ (`brew install vlang` on macOS)
-- For tests/linking on macOS: `export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"`
+- V 0.5+ (`brew install vlang` on macOS, or [install from source](https://github.com/vlang/v))
+- On macOS only, tests may need: `export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"`
 
 ## Commands
 
