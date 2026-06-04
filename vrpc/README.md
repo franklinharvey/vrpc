@@ -28,17 +28,15 @@ v run ../examples/users
 
 ## Testing
 
-Tests use [veetest](../veetest): named **suites** and **cases** on top of `v test`. See [veetest/README.md](../veetest/README.md).
+Tests use [veetest](https://github.com/franklinharvey/veetest) (`https://github.com/franklinharvey/veetest@v0.1.0` in `v.mod`).
 
 ```bash
-cd veetest && v -cc gcc test .
-cd vrpc && v -cc gcc test .
+cd vrpc && v install && v -cc gcc test .
 ```
 
 ## Layout
 
 ```txt
-veetest/         — test harness (module veetest), sibling project
 vrpc/            — runtime library (module vrpc)
 cmd/vgen/        — CLI: generate, inspect, openapi; IR + emitters (V, TS)
 examples/        — hello, users
