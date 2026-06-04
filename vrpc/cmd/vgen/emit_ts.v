@@ -16,10 +16,10 @@ pub fn emit_ts_client(service Service, opts TsEmitOptions) []GeneratedFile {
 		},
 		GeneratedFile{
 			path:    '${pkg}/index.ts'
-			content: generate_ts_index(service, opts.zod)
+			content: generate_ts_index(service, opts.with_zod)
 		},
 	]
-	if opts.zod {
+	if opts.with_zod {
 		files << emit_ts_zod(service)
 	}
 	return files
@@ -27,7 +27,7 @@ pub fn emit_ts_client(service Service, opts TsEmitOptions) []GeneratedFile {
 
 pub struct TsEmitOptions {
 pub:
-	zod bool
+	with_zod bool
 }
 
 fn generate_ts_types(s Service) string {

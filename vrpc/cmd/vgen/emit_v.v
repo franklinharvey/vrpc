@@ -113,7 +113,7 @@ fn input_type_names(s Service) []string {
 	mut names := []string{}
 	mut seen := map[string]bool{}
 	for proc in s.procedures {
-		if proc.input_type !in seen {
+		if !(proc.input_type in seen) {
 			seen[proc.input_type] = true
 			names << proc.input_type
 		}

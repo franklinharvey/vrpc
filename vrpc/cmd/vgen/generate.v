@@ -3,7 +3,7 @@ module main
 pub fn generate_in_dir(dir string, targets []string, zod bool) ! {
 	opts := GenerateOptions{
 		targets: parse_targets(targets)
-		zod:     zod
+		with_zod: zod
 	}
 	generate_dir(dir, opts)!
 }

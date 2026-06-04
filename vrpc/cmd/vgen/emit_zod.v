@@ -25,16 +25,16 @@ fn generate_zod_schemas(s Service) string {
 	return b.str()
 }
 
-fn zod_schema(st TypeDef, all map[string]TypeDef) string {
+fn zod_schema(st TypeDef, types map[string]TypeDef) string {
 	mut fields := []string{}
 	for f in st.fields {
-		fields << '  ${f.name}: ${zod_field_expr(f, all)}'
+		fields << '  ${f.name}: ${zod_field_expr(f, types)}'
 	}
 	return 'export const ${st.name}Schema = z.object({\n${fields.join(',\n')}\n})'
 }
 
-fn zod_field_expr(f Field, all map[string]TypeDef) string {
-	mut expr := zod_base_expr(f, all)
+fn zod_field_expr(f Field, types map[string]TypeDef) string {
+	mut expr := zod_base_expr(f, types)
 	for v in f.validators {
 		expr = zod_apply_validator(expr, v, f.kind)
 	}
@@ -44,9 +44,9 @@ fn zod_field_expr(f Field, all map[string]TypeDef) string {
 	return expr
 }
 
-fn zod_base_expr(f Field, all map[string]TypeDef) string {
+fn zod_base_expr(f Field, types map[string]TypeDef) string {
 	if f.kind == .array {
-		inner := zod_named_ref(f.array_elem, all)
+		inner := zod_named_ref(f.array_elem, types)
 		return 'z.array(${inner})'
 	}
 	return match f.kind {
@@ -57,8 +57,8 @@ fn zod_base_expr(f Field, all map[string]TypeDef) string {
 	}
 }
 
-fn zod_named_ref(name string, all map[string]TypeDef) string {
-	if name in all {
+fn zod_named_ref(name string, types map[string]TypeDef) string {
+	if name in types {
 		return '${name}Schema'
 	}
 	return 'z.string()'

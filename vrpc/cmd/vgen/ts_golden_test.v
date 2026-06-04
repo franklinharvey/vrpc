@@ -7,7 +7,7 @@ fn test_ts_emit_matches_golden() {
 	contract := os.join_path(root, 'testdata/users/users.contract')
 	golden_dir := os.join_path(root, 'testdata/users/golden')
 	service := parse_contract_file(contract) or { panic(err) }
-	files := emit_ts_client(service, TsEmitOptions{zod: false})
+	files := emit_ts_client(service, TsEmitOptions{with_zod: false})
 	assert files.len == 3
 	for file in files {
 		base := os.base(file.path)

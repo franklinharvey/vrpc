@@ -5,7 +5,7 @@ import os
 pub struct GenerateOptions {
 pub:
 	targets []string
-	zod     bool
+	with_zod bool
 }
 
 pub fn default_targets() []string {
@@ -43,7 +43,7 @@ fn files_for_target(service Service, target string, opts GenerateOptions) []Gene
 	return match target {
 		'v', 'server' { emit_v_server(service) }
 		'v_client' { emit_v_client(service) }
-		'ts', 'typescript' { emit_ts_client(service, TsEmitOptions{zod: opts.zod}) }
+		'ts', 'typescript' { emit_ts_client(service, TsEmitOptions{with_zod: opts.with_zod}) }
 		'zod' { [emit_ts_zod(service)] }
 		'openapi' { [emit_openapi(service)] }
 		else { []GeneratedFile{} }

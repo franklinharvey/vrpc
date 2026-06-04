@@ -78,11 +78,11 @@ fn oapi_schemas_json(service Service) string {
 	return '{\n${parts.join(',\n')}\n  }'
 }
 
-fn oapi_type_json(st TypeDef, all map[string]TypeDef) string {
+fn oapi_type_json(st TypeDef, types map[string]TypeDef) string {
 	mut prop_parts := []string{}
 	mut required := []string{}
 	for f in st.fields {
-		prop_parts << '"${json_escape(f.name)}": ${oapi_field_json(f, all)}'
+		prop_parts << '"${json_escape(f.name)}": ${oapi_field_json(f, types)}'
 		if f.required {
 			required << '"${json_escape(f.name)}"'
 		}
@@ -96,16 +96,16 @@ fn oapi_type_json(st TypeDef, all map[string]TypeDef) string {
 	return '{ ${lines.join(', ')} }'
 }
 
-fn oapi_field_json(f Field, all map[string]TypeDef) string {
+fn oapi_field_json(f Field, types map[string]TypeDef) string {
 	if f.kind == .array {
-		return '{ "type": "array", "items": ${oapi_named_type_json(f.array_elem, all)} }'
+		return '{ "type": "array", "items": ${oapi_named_type_json(f.array_elem, types)} }'
 	}
 	return '{ "type": "${kind_to_oapi(f.kind)}" }'
 }
 
-fn oapi_named_type_json(name string, all map[string]TypeDef) string {
-	if st := all[name] {
-		return oapi_type_json(st, all)
+fn oapi_named_type_json(name string, types map[string]TypeDef) string {
+	if st := types[name] {
+		return oapi_type_json(st, types)
 	}
 	return '{ "type": "string" }'
 }
