@@ -40,14 +40,26 @@ pub fn generate_service(service Service, contract_dir string, opts GenerateOptio
 }
 
 fn files_for_target(service Service, target string, opts GenerateOptions) []GeneratedFile {
-	return match target {
-		'v', 'server' { emit_v_server(service) }
-		'v_client' { emit_v_client(service) }
-		'ts', 'typescript' { emit_ts_client(service, TsEmitOptions{with_zod: opts.with_zod}) }
-		'zod' { [emit_ts_zod(service)] }
-		'openapi' { [emit_openapi(service)] }
-		else { []GeneratedFile{} }
+	// if/else avoids a V 0.5 C codegen bug with match + struct literals on Linux/gcc.
+	if target == 'v' || target == 'server' {
+		return emit_v_server(service)
 	}
+	if target == 'v_client' {
+		return emit_v_client(service)
+	}
+	if target == 'ts' || target == 'typescript' {
+		ts_opts := TsEmitOptions{with_zod: opts.with_zod}
+		return emit_ts_client(service, ts_opts)
+	}
+	if target == 'zod' {
+		zod_file := emit_ts_zod(service)
+		return [zod_file]
+	}
+	if target == 'openapi' {
+		oapi_file := emit_openapi(service)
+		return [oapi_file]
+	}
+	return []GeneratedFile{}
 }
 
 pub fn generate_dir(dir string, opts GenerateOptions) ! {
