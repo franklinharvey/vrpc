@@ -1,0 +1,17 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "UserService", "version": "0.1.0" },
+  "paths": {
+    "/users": { "post": { "operation_id": "create_user", "has_body": true, "request_name": "CreateUserRequest", "parameters": [], "responses": { "200": { "description": "Success" }, "400": { "description": "Validation error" }, "500": { "description": "Internal error" } } }, "get": { "operation_id": "list_users", "has_body": false, "request_name": "ListUsersRequest", "parameters": [{ "name": "limit", "in": "query", "required": false, "schema": { "type": "integer" } }, { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "description": "Success" }, "400": { "description": "Validation error" }, "500": { "description": "Internal error" } } } },
+    "/users/{id}": { "get": { "operation_id": "get_user", "has_body": false, "request_name": "GetUserRequest", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Success" }, "400": { "description": "Validation error" }, "500": { "description": "Internal error" } } } }
+  },
+  "components": { "schemas": {
+    "CreateUserRequest": { "type": "object", "properties": { "name": { "type": "string" }, "email": { "type": "string" } }, "required": ["name", "email"] },
+    "CreateUserResponse": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "email": { "type": "string" } } },
+    "GetUserRequest": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] },
+    "GetUserResponse": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "email": { "type": "string" } } },
+    "ListUsersRequest": { "type": "object", "properties": { "limit": { "type": "integer" }, "cursor": { "type": "string" } } },
+    "ListUsersResponse": { "type": "object", "properties": { "users": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "email": { "type": "string" } } } }, "next_cursor": { "type": "string" } } },
+    "UserSummary": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "email": { "type": "string" } } }
+  } }
+}

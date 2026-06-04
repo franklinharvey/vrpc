@@ -1,0 +1,57 @@
+module users
+
+@[service; prefix: '/users']
+pub interface UserService {
+	@[post: '/']
+	create_user(CreateUserRequest) !CreateUserResponse
+
+	@[get: '/:id']
+	get_user(GetUserRequest) !GetUserResponse
+
+	@[get: '/']
+	list_users(ListUsersRequest) !ListUsersResponse
+}
+
+pub struct CreateUserRequest {
+pub:
+	name  string @[body; required; min_len: 1]
+	email string @[body; required; email]
+}
+
+pub struct CreateUserResponse {
+pub:
+	id    string
+	name  string
+	email string
+}
+
+pub struct GetUserRequest {
+pub:
+	id string @[path; required]
+}
+
+pub struct GetUserResponse {
+pub:
+	id    string
+	name  string
+	email string
+}
+
+pub struct ListUsersRequest {
+pub:
+	limit  int    @[query; min: 1; max: 100]
+	cursor string @[query]
+}
+
+pub struct ListUsersResponse {
+pub:
+	users       []UserSummary
+	next_cursor string
+}
+
+pub struct UserSummary {
+pub:
+	id    string
+	name  string
+	email string
+}
