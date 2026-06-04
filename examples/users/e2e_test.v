@@ -5,7 +5,8 @@ import net.http
 import vrpc
 import users
 
-const test_addr = '127.0.0.1:19197'
+// OS-assigned port — required because V runs test fns in parallel on CI.
+const test_addr = '127.0.0.1:0'
 
 fn new_test_app() !&vrpc.App {
 	repo := users.new_memory_repo()
@@ -46,12 +47,13 @@ fn test_e2e_list_users() {
 	defer {
 		app.shutdown() or {}
 	}
-	http.fetch(
+	create_res := http.fetch(
 		url:    base + '/users'
 		method: .post
 		data:   '{"name":"Grace","email":"grace@example.com"}'
 		header: http.new_header(key: .content_type, value: 'application/json')
 	)!
+	assert create_res.status_code == 200
 	list_res := http.fetch(url: base + '/users?limit=10', method: .get)!
 	assert list_res.status_code == 200
 	listed := json.decode(users.ListUsersResponse, list_res.body)!
