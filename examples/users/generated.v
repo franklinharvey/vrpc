@@ -6,160 +6,237 @@ import vrpc
 fn schema_create_user_request() vrpc.Schema {
 	return vrpc.object_schema('CreateUserRequest', [
 		vrpc.SchemaField{
-			name:       'name'
-			typ:        'string'
-			source:     .body
-			required:   true
-			validators: [
-				vrpc.ValidatorDef{ rule: 'required', value: '' },
-				vrpc.ValidatorDef{ rule: 'min_len', value: '1' },
-			]
+			name: 'name'
+			typ: 'string'
+			source: .body
+			required: true
+			validators: [vrpc.ValidatorDef{ rule: 'required', value: '' }, vrpc.ValidatorDef{ rule: 'min_len', value: '1' }]
 		},
 		vrpc.SchemaField{
-			name:       'email'
-			typ:        'string'
-			source:     .body
-			required:   true
-			validators: [
-				vrpc.ValidatorDef{ rule: 'required', value: '' },
-				vrpc.ValidatorDef{ rule: 'email', value: '' },
-			]
+			name: 'email'
+			typ: 'string'
+			source: .body
+			required: true
+			validators: [vrpc.ValidatorDef{ rule: 'required', value: '' }, vrpc.ValidatorDef{ rule: 'email', value: '' }]
 		},
 	])
 }
 
+
 fn schema_create_user_response() vrpc.Schema {
-	return vrpc.object_schema('CreateUserResponse', [])
+	return vrpc.object_schema('CreateUserResponse', [
+		vrpc.SchemaField{
+			name: 'id'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+		vrpc.SchemaField{
+			name: 'name'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+		vrpc.SchemaField{
+			name: 'email'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+	])
 }
+
 
 fn schema_get_user_request() vrpc.Schema {
 	return vrpc.object_schema('GetUserRequest', [
 		vrpc.SchemaField{
-			name:       'id'
-			typ:        'string'
-			source:     .path
-			required:   true
+			name: 'id'
+			typ: 'string'
+			source: .path
+			required: true
 			validators: [vrpc.ValidatorDef{ rule: 'required', value: '' }]
 		},
 	])
 }
 
-fn schema_get_user_response() vrpc.Schema {
-	return vrpc.object_schema('GetUserResponse', [])
-}
 
-fn schema_list_users_request() vrpc.Schema {
-	return vrpc.object_schema('ListUsersRequest', [
+fn schema_get_user_response() vrpc.Schema {
+	return vrpc.object_schema('GetUserResponse', [
 		vrpc.SchemaField{
-			name:     'limit'
-			typ:      'int'
-			source:   .query
+			name: 'id'
+			typ: 'string'
+			source: .body
 			required: false
-			validators: [
-				vrpc.ValidatorDef{ rule: 'min', value: '1' },
-				vrpc.ValidatorDef{ rule: 'max', value: '100' },
-			]
+			validators: []vrpc.ValidatorDef{}
 		},
 		vrpc.SchemaField{
-			name:       'cursor'
-			typ:        'string'
-			source:     .query
-			required:   false
-			validators: []
+			name: 'name'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+		vrpc.SchemaField{
+			name: 'email'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
 		},
 	])
 }
 
-fn schema_list_users_response() vrpc.Schema {
-	return vrpc.object_schema('ListUsersResponse', [])
+
+fn schema_list_users_request() vrpc.Schema {
+	return vrpc.object_schema('ListUsersRequest', [
+		vrpc.SchemaField{
+			name: 'limit'
+			typ: 'int'
+			source: .query
+			required: false
+			validators: [vrpc.ValidatorDef{ rule: 'min', value: '1' }, vrpc.ValidatorDef{ rule: 'max', value: '100' }]
+		},
+		vrpc.SchemaField{
+			name: 'cursor'
+			typ: 'string'
+			source: .query
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+	])
 }
 
-pub fn bind_create_user_request(mut ctx vrpc.Context) !CreateUserRequest {
-	return vrpc.bind_body[CreateUserRequest](ctx)!
+
+fn schema_list_users_response() vrpc.Schema {
+	return vrpc.object_schema('ListUsersResponse', [
+		vrpc.SchemaField{
+			name: 'users'
+			typ: '[]UserSummary'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+		vrpc.SchemaField{
+			name: 'next_cursor'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+	])
 }
+
+
+fn schema_user_summary() vrpc.Schema {
+	return vrpc.object_schema('UserSummary', [
+		vrpc.SchemaField{
+			name: 'id'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+		vrpc.SchemaField{
+			name: 'name'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+		vrpc.SchemaField{
+			name: 'email'
+			typ: 'string'
+			source: .body
+			required: false
+			validators: []vrpc.ValidatorDef{}
+		},
+	])
+}
+
+
+pub fn bind_create_user_request(mut ctx vrpc.Context) !CreateUserRequest {
+	mut decoded := vrpc.bind_body[CreateUserRequest](ctx)!
+	return decoded
+}
+
 
 fn validate_create_user_request(req CreateUserRequest) []vrpc.ValidationError {
 	mut errs := []vrpc.ValidationError{}
-	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('name', req.name, [
-		vrpc.ValidatorDef{ rule: 'required', value: '' },
-		vrpc.ValidatorDef{ rule: 'min_len', value: '1' },
-	]))
-	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('email', req.email, [
-		vrpc.ValidatorDef{ rule: 'required', value: '' },
-		vrpc.ValidatorDef{ rule: 'email', value: '' },
-	]))
+	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('name', req.name, [vrpc.ValidatorDef{ rule: 'required', value: '' }, vrpc.ValidatorDef{ rule: 'min_len', value: '1' }]))
+	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('email', req.email, [vrpc.ValidatorDef{ rule: 'required', value: '' }, vrpc.ValidatorDef{ rule: 'email', value: '' }]))
 	return vrpc.collect_errors(errs)
 }
 
+
 pub fn bind_get_user_request(mut ctx vrpc.Context) !GetUserRequest {
-	return GetUserRequest{
-		id: vrpc.bind_path_param(ctx, 'id')
-	}
+	return GetUserRequest{ id: vrpc.bind_path_param(ctx, 'id') }
 }
+
 
 fn validate_get_user_request(req GetUserRequest) []vrpc.ValidationError {
 	mut errs := []vrpc.ValidationError{}
-	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('id', req.id, [
-		vrpc.ValidatorDef{ rule: 'required', value: '' },
-	]))
+	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('id', req.id, [vrpc.ValidatorDef{ rule: 'required', value: '' }]))
 	return vrpc.collect_errors(errs)
 }
 
+
 pub fn bind_list_users_request(mut ctx vrpc.Context) !ListUsersRequest {
-	return ListUsersRequest{
-		limit:  vrpc.query_int(ctx, 'limit', 0)
-		cursor: vrpc.bind_query_param(ctx, 'cursor')
-	}
+	return ListUsersRequest{ limit: vrpc.query_int(ctx, 'limit', 0), cursor: vrpc.bind_query_param(ctx, 'cursor') }
 }
+
 
 fn validate_list_users_request(req ListUsersRequest) []vrpc.ValidationError {
 	mut errs := []vrpc.ValidationError{}
-	errs = vrpc.merge_errors(mut errs, vrpc.validate_int_field('limit', req.limit, [
-		vrpc.ValidatorDef{ rule: 'min', value: '1' },
-		vrpc.ValidatorDef{ rule: 'max', value: '100' },
-	]))
+	if req.limit != 0 {
+		errs = vrpc.merge_errors(mut errs, vrpc.validate_int_field('limit', req.limit, [vrpc.ValidatorDef{ rule: 'min', value: '1' }, vrpc.ValidatorDef{ rule: 'max', value: '100' }]))
+	}
+	errs = vrpc.merge_errors(mut errs, vrpc.validate_field('cursor', req.cursor, []vrpc.ValidatorDef{}))
 	return vrpc.collect_errors(errs)
 }
+
 
 @[heap]
 pub struct UserServiceRuntime {
 pub mut:
-	impl UserServiceImpl
+	impl &UserServiceImpl
 }
 
-pub fn mount_user_service(mut app vrpc.App, impl UserServiceImpl) ! {
+pub fn mount_user_service(mut app vrpc.App, mut impl &UserServiceImpl) ! {
 	mut rt := UserServiceRuntime{ impl: impl }
 	service := vrpc.ServiceDef{
-		name:   'UserService'
+		name: 'UserService'
 		prefix: '/users'
 		procedures: [
 			vrpc.ProcedureDef{
-				name:          'create_user'
-				input_schema:  schema_create_user_request()
+				name: 'create_user'
+				input_schema: schema_create_user_request()
 				output_schema: schema_create_user_response()
 				transport: vrpc.TransportBinding{
 					method: .post
-					path:   '/'
+					path: '/'
 				}
 				handler: rt.create_user_handler
 			},
 			vrpc.ProcedureDef{
-				name:          'get_user'
-				input_schema:  schema_get_user_request()
+				name: 'get_user'
+				input_schema: schema_get_user_request()
 				output_schema: schema_get_user_response()
 				transport: vrpc.TransportBinding{
 					method: .get
-					path:   '/:id'
+					path: '/:id'
 				}
 				handler: rt.get_user_handler
 			},
 			vrpc.ProcedureDef{
-				name:          'list_users'
-				input_schema:  schema_list_users_request()
+				name: 'list_users'
+				input_schema: schema_list_users_request()
 				output_schema: schema_list_users_response()
 				transport: vrpc.TransportBinding{
 					method: .get
-					path:   '/'
+					path: '/'
 				}
 				handler: rt.list_users_handler
 			},
@@ -174,7 +251,8 @@ pub fn (mut r UserServiceRuntime) create_user_handler(mut ctx vrpc.Context) !vrp
 	if errs.len > 0 {
 		return vrpc.validation_error_response(errs)
 	}
-	res := r.impl.create_user(req)!
+	mut impl := r.impl
+	res := impl.create_user(req)!
 	return vrpc.json_response(res)
 }
 
@@ -184,7 +262,8 @@ pub fn (mut r UserServiceRuntime) get_user_handler(mut ctx vrpc.Context) !vrpc.R
 	if errs.len > 0 {
 		return vrpc.validation_error_response(errs)
 	}
-	res := r.impl.get_user(req)!
+	mut impl := r.impl
+	res := impl.get_user(req)!
 	return vrpc.json_response(res)
 }
 
@@ -194,6 +273,8 @@ pub fn (mut r UserServiceRuntime) list_users_handler(mut ctx vrpc.Context) !vrpc
 	if errs.len > 0 {
 		return vrpc.validation_error_response(errs)
 	}
-	res := r.impl.list_users(req)!
+	mut impl := r.impl
+	res := impl.list_users(req)!
 	return vrpc.json_response(res)
 }
+

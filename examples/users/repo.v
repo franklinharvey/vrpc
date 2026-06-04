@@ -13,14 +13,15 @@ pub:
 	next_cursor string
 }
 
+@[heap]
 pub struct MemoryRepo {
 mut:
 	users map[string]User
 	seq   int
 }
 
-pub fn new_memory_repo() MemoryRepo {
-	return MemoryRepo{
+pub fn new_memory_repo() &MemoryRepo {
+	return &MemoryRepo{
 		users: map[string]User{}
 	}
 }
@@ -37,11 +38,11 @@ pub fn (mut r MemoryRepo) create(name string, email string) !User {
 	return user
 }
 
-pub fn (r MemoryRepo) find_by_id(id string) !User {
+pub fn (r &MemoryRepo) find_by_id(id string) !User {
 	return r.users[id] or { return error('not found') }
 }
 
-pub fn (r MemoryRepo) list(limit int, cursor string) !UserPage {
+pub fn (r &MemoryRepo) list(limit int, cursor string) !UserPage {
 	mut keys := r.users.keys()
 	keys.sort()
 	mut start := 0

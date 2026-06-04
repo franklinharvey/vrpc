@@ -15,6 +15,21 @@ Contract-first HTTP service framework for [V](https://vlang.io), described in [b
 - V 0.5+ (`brew install vlang` on macOS, or [install from source](https://github.com/vlang/v))
 - On macOS only, tests may need: `export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"`
 
+## CI locally
+
+Same checks as GitHub Actions:
+
+```bash
+./scripts/ci.sh
+```
+
+Or in Docker (Ubuntu + V 0.5.1 + gcc, no local V install needed):
+
+```bash
+docker build --platform linux/amd64 -f Dockerfile.ci -t vrpc-ci .
+docker run --rm --platform linux/amd64 vrpc-ci
+```
+
 ## Commands
 
 ```bash

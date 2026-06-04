@@ -1,0 +1,22 @@
+# Mirror GitHub Actions (ubuntu + V + gcc).
+# On Apple Silicon: docker build --platform linux/amd64 -f Dockerfile.ci -t vrpc-ci .
+FROM ubuntu:24.04
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    ca-certificates curl git build-essential libgc-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth=1 https://github.com/vlang/v /opt/v \
+  && cd /opt/v \
+  && make \
+  && ./v symlink
+
+ENV PATH="/opt/v:${PATH}"
+
+WORKDIR /src
+COPY . .
+
+RUN chmod +x scripts/ci.sh && ./scripts/ci.sh
+
+CMD ["bash", "scripts/ci.sh"]

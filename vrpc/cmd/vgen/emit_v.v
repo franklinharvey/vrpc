@@ -38,11 +38,11 @@ fn generate_v_server(s Service) string {
 	b.writeln('@[heap]')
 	b.writeln('pub struct ${s.name}Runtime {')
 	b.writeln('pub mut:')
-	b.writeln('	impl ${v_impl_name(s.name)}')
+	b.writeln('	impl &${v_impl_name(s.name)}')
 	b.writeln('}')
 	b.writeln('')
 	mount := v_service_mount_name(s.name)
-	b.writeln('pub fn ${mount}(mut app vrpc.App, impl ${v_impl_name(s.name)}) ! {')
+	b.writeln('pub fn ${mount}(mut app vrpc.App, mut impl &${v_impl_name(s.name)}) ! {')
 	b.writeln('	mut rt := ${s.name}Runtime{ impl: impl }')
 	b.writeln('	service := vrpc.ServiceDef{')
 	b.writeln("		name: '${s.name}'")
@@ -151,9 +151,28 @@ fn v_handler_method(s Service, proc Procedure) string {
 	if errs.len > 0 {
 		return vrpc.validation_error_response(errs)
 	}
-	res := r.impl.${proc.name}(req)!
+	mut impl := r.impl
+	res := impl.${proc.name}(req)!
 	return vrpc.json_response(res)
 }"
+}
+
+fn v_bind_field_expr(f Field) string {
+	return match f.source {
+		.path { 'vrpc.bind_path_param(ctx, \'${f.name}\')' }
+		.query {
+			if f.kind == .int {
+				'vrpc.query_int(ctx, \'${f.name}\', 0)'
+			} else {
+				'vrpc.bind_query_param(ctx, \'${f.name}\')'
+			}
+		}
+		.header {
+			key := if f.header_key != '' { f.header_key } else { f.name }
+			'vrpc.bind_header(ctx, \'${key}\')'
+		}
+		else { '\'\'' }
+	}
 }
 
 fn v_bind_fn(st TypeDef) string {
@@ -167,29 +186,34 @@ fn v_bind_fn(st TypeDef) string {
 	}
 	if has_body {
 		b.writeln('	mut decoded := vrpc.bind_body[${st.name}](ctx)!')
-	} else {
-		b.writeln('	mut decoded := ${st.name}{}')
-	}
-	for f in st.fields {
-		match f.source {
-			.path {
-				b.writeln('	decoded.${f.name} = vrpc.bind_path_param(ctx, \'${f.name}\')')
-			}
-			.query {
-				if f.kind == .int {
-					b.writeln('	decoded.${f.name} = vrpc.query_int(ctx, \'${f.name}\', 0)')
-				} else {
-					b.writeln('	decoded.${f.name} = vrpc.bind_query_param(ctx, \'${f.name}\')')
+		for f in st.fields {
+			match f.source {
+				.path {
+					b.writeln('	decoded.${f.name} = vrpc.bind_path_param(ctx, \'${f.name}\')')
 				}
+				.query {
+					if f.kind == .int {
+						b.writeln('	decoded.${f.name} = vrpc.query_int(ctx, \'${f.name}\', 0)')
+					} else {
+						b.writeln('	decoded.${f.name} = vrpc.bind_query_param(ctx, \'${f.name}\')')
+					}
+				}
+				.header {
+					key := if f.header_key != '' { f.header_key } else { f.name }
+					b.writeln('	decoded.${f.name} = vrpc.bind_header(ctx, \'${key}\')')
+				}
+				else {}
 			}
-			.header {
-				key := if f.header_key != '' { f.header_key } else { f.name }
-				b.writeln('	decoded.${f.name} = vrpc.bind_header(ctx, \'${key}\')')
-			}
-			else {}
 		}
+		b.writeln('	return decoded')
+	} else {
+		mut fields := []string{}
+		for f in st.fields {
+			val := v_bind_field_expr(f)
+			fields << '${f.name}: ${val}'
+		}
+		b.writeln('	return ${st.name}{ ${fields.join(', ')} }')
 	}
-	b.writeln('	return decoded')
 	b.writeln('}')
 	return b.str()
 }
@@ -200,7 +224,13 @@ fn v_validate_fn(st TypeDef) string {
 	b.writeln('	mut errs := []vrpc.ValidationError{}')
 	for f in st.fields {
 		if f.kind == .int {
-			b.writeln('	errs = vrpc.merge_errors(mut errs, vrpc.validate_int_field(\'${f.name}\', req.${f.name}, ${v_validators_literal(f)}))')
+			if f.source == .query && !f.required {
+				b.writeln('	if req.${f.name} != 0 {')
+				b.writeln('		errs = vrpc.merge_errors(mut errs, vrpc.validate_int_field(\'${f.name}\', req.${f.name}, ${v_validators_literal(f)}))')
+				b.writeln('	}')
+			} else {
+				b.writeln('	errs = vrpc.merge_errors(mut errs, vrpc.validate_int_field(\'${f.name}\', req.${f.name}, ${v_validators_literal(f)}))')
+			}
 		} else {
 			b.writeln('	errs = vrpc.merge_errors(mut errs, vrpc.validate_field(\'${f.name}\', req.${f.name}, ${v_validators_literal(f)}))')
 		}

@@ -2,13 +2,14 @@ module users
 
 import vrpc
 
+@[heap]
 pub struct UserServiceImpl {
 pub mut:
-	repo MemoryRepo
+	repo &MemoryRepo
 }
 
-pub fn new_service(repo MemoryRepo) UserServiceImpl {
-	return UserServiceImpl{
+pub fn new_service(repo &MemoryRepo) &UserServiceImpl {
+	return &UserServiceImpl{
 		repo: repo
 	}
 }
@@ -22,7 +23,7 @@ pub fn (mut s UserServiceImpl) create_user(req CreateUserRequest) !CreateUserRes
 	}
 }
 
-pub fn (s UserServiceImpl) get_user(req GetUserRequest) !GetUserResponse {
+pub fn (s &UserServiceImpl) get_user(req GetUserRequest) !GetUserResponse {
 	user := s.repo.find_by_id(req.id) or {
 		return vrpc.not_found('User not found')
 	}
@@ -33,7 +34,7 @@ pub fn (s UserServiceImpl) get_user(req GetUserRequest) !GetUserResponse {
 	}
 }
 
-pub fn (s UserServiceImpl) list_users(req ListUsersRequest) !ListUsersResponse {
+pub fn (s &UserServiceImpl) list_users(req ListUsersRequest) !ListUsersResponse {
 	mut limit := req.limit
 	if limit <= 0 {
 		limit = 20

@@ -16,8 +16,8 @@ jobs:
         with:
           stable: true
 
-      - name: Install C toolchain
-        run: sudo apt-get update && sudo apt-get install -y build-essential
+      - name: Install C toolchain and Boehm GC
+        run: sudo apt-get update && sudo apt-get install -y build-essential libgc-dev
 
       - name: Test vrpc runtime and vgen
         run: cd vrpc && v -cc gcc test .
