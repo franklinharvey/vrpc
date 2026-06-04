@@ -1,5 +1,5 @@
 Module {
 	name: 'users_example'
-	description: 'Vesper users example'
-	dependencies: ['../../vesper']
+	description: 'Vrpc users example'
+	dependencies: ['../../vrpc']
 }

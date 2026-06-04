@@ -2,14 +2,14 @@ module main
 
 import json
 import net.http
-import vesper
+import vrpc
 import users
 
 const test_addr = '127.0.0.1:19197'
 
-fn new_test_app() !&vesper.App {
+fn new_test_app() !&vrpc.App {
 	repo := users.new_memory_repo()
-	mut app := vesper.new()
+	mut app := vrpc.new()
 	users.mount_user_service(mut app, users.new_service(repo))!
 	app.openapi('/openapi.json')!
 	return app

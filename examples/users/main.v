@@ -1,13 +1,13 @@
 module main
 
-import vesper
+import vrpc
 import users
 
 fn main() {
 	repo := users.new_memory_repo()
-	mut app := vesper.new()
-	app.use(vesper.logger())
-	app.use(vesper.cors())
+	mut app := vrpc.new()
+	app.use(vrpc.logger())
+	app.use(vrpc.cors())
 	users.mount_user_service(mut app, users.new_service(repo))!
 	app.openapi('/openapi.json')!
 	app.docs('/docs')!

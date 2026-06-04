@@ -1,4 +1,4 @@
 Module {
 	name: 'hello_example'
-	dependencies: ['../../vesper']
+	dependencies: ['../../vrpc']
 }

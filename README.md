@@ -1,4 +1,4 @@
-# vrpc / vesper
+# vrpc
 
 Contract-first HTTP service framework for [V](https://vlang.io), described in [brief.md](brief.md).
 
@@ -7,7 +7,7 @@ Contract-first HTTP service framework for [V](https://vlang.io), described in [b
 | Path | Purpose |
 |------|---------|
 | [TASKS.md](TASKS.md) | Implementation checklist |
-| [vesper/](vesper/) | Runtime library + `vesper` CLI |
+| [vrpc/](vrpc/) | Runtime library + `vgen` codegen CLI |
 | [examples/](examples/) | `hello`, `users` demos |
 
 ## Requirements
@@ -18,13 +18,13 @@ Contract-first HTTP service framework for [V](https://vlang.io), described in [b
 ## Commands
 
 ```bash
-cd vesper
+cd vrpc
 v test .
 
 cd ../examples/users
 v test .    # e2e: create/get/list, openapi, validation, not_found
 
-v run cmd/vgen generate ../examples/users   # from vesper/
+v run cmd/vgen generate ../examples/users   # from vrpc/
 
 cd ../examples/users
 v run .

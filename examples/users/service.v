@@ -1,6 +1,6 @@
 module users
 
-import vesper
+import vrpc
 
 pub struct UserServiceImpl {
 pub mut:
@@ -24,7 +24,7 @@ pub fn (mut s UserServiceImpl) create_user(req CreateUserRequest) !CreateUserRes
 
 pub fn (s UserServiceImpl) get_user(req GetUserRequest) !GetUserResponse {
 	user := s.repo.find_by_id(req.id) or {
-		return vesper.not_found('User not found')
+		return vrpc.not_found('User not found')
 	}
 	return GetUserResponse{
 		id:    user.id

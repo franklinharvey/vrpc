@@ -1,4 +1,4 @@
-# Vesper — implementation tasks
+# Vrpc — implementation tasks
 
 Tracked against [brief.md](brief.md). Status: `todo` | `in_progress` | `done`.
 
@@ -32,7 +32,7 @@ Tracked against [brief.md](brief.md). Status: `todo` | `in_progress` | `done`.
 | Task | Status |
 |------|--------|
 | Line-oriented contract parser (`@[service]`, interface, `@[post]` methods) | done |
-| `vesper generate` CLI command | done |
+| `vrpc generate` CLI command | done |
 | Emit `mount_*_service` + schema helpers | done |
 | Generator snapshot test (users contract) | done |
 
@@ -99,7 +99,7 @@ Tracked against [brief.md](brief.md). Status: `todo` | `in_progress` | `done`.
 | `examples/validation` | todo |
 | `examples/errors` | todo |
 | E2E tests (`examples/users/e2e_test.v`) | done |
-| `vesper/README.md` | done |
+| `vrpc/README.md` | done |
 
 ## Milestone 9: multi-target codegen (IR pipeline)
 

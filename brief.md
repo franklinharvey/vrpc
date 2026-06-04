@@ -2,7 +2,7 @@
 
 ## Working name
 
-`vesper`
+`vrpc`
 
 A contract-first service framework for V.
 
@@ -74,7 +74,7 @@ Do not use a route-first API as the primary framework interface.
 ```v
 module users
 
-import vesper
+import vrpc
 
 @[service; prefix: '/users']
 pub interface UserService {
@@ -184,13 +184,13 @@ pub fn (s UserServiceImpl) list_users(req ListUsersRequest) !ListUsersResponse {
 ```v
 module main
 
-import vesper
+import vrpc
 import users
 
 fn main() {
     repo := users.new_repo()
 
-    mut app := vesper.new()
+    mut app := vrpc.new()
 
     users.mount_user_service(mut app, users.new_service(repo))!
 
@@ -262,11 +262,11 @@ The generator reads service contracts and emits mount functions, service definit
 Expected package layout:
 
 ```txt
-vesper/
+vrpc/
   README.md
   v.mod
   src/
-    vesper/
+    vrpc/
       app.v
       context.v
       router.v
@@ -314,7 +314,7 @@ my_api/
 ### App
 
 ```v
-module vesper
+module vrpc
 
 pub struct App {
 mut:
@@ -354,7 +354,7 @@ pub fn (mut app App) docs(path string) ! {
 ### ServiceDef
 
 ```v
-module vesper
+module vrpc
 
 pub struct ServiceDef {
 pub:
@@ -367,7 +367,7 @@ pub:
 ### ProcedureDef
 
 ```v
-module vesper
+module vrpc
 
 pub struct ProcedureDef {
 pub:
@@ -383,7 +383,7 @@ pub:
 ### TransportBinding
 
 ```v
-module vesper
+module vrpc
 
 pub enum HttpMethod {
     get
@@ -403,7 +403,7 @@ pub:
 ### Schema
 
 ```v
-module vesper
+module vrpc
 
 pub enum SchemaKind {
     object
@@ -441,7 +441,7 @@ pub enum FieldSource {
 ### Context
 
 ```v
-module vesper
+module vrpc
 
 pub struct Context {
 pub:
@@ -469,11 +469,11 @@ pub fn (s UserServiceImpl) create_user(req CreateUserRequest) !CreateUserRespons
 Generated wrapper:
 
 ```v
-fn create_user_handler(mut ctx vesper.Context, impl UserServiceImpl) !vesper.Response {
-    req := vesper.bind[CreateUserRequest](ctx)!
-    vesper.validate(req)!
+fn create_user_handler(mut ctx vrpc.Context, impl UserServiceImpl) !vrpc.Response {
+    req := vrpc.bind[CreateUserRequest](ctx)!
+    vrpc.validate(req)!
     res := impl.create_user(req)!
-    return vesper.json(res)
+    return vrpc.json(res)
 }
 ```
 
@@ -618,7 +618,7 @@ Business logic should return V errors. The framework should map known framework 
 MVP built-in errors:
 
 ```v
-module vesper
+module vrpc
 
 pub fn bad_request(message string) IError
 pub fn unauthorized(message string) IError
@@ -645,7 +645,7 @@ User code:
 ```v
 pub fn (s UserServiceImpl) get_user(req GetUserRequest) !GetUserResponse {
     user := s.repo.find_by_id(req.id) or {
-        return vesper.not_found('User not found')
+        return vrpc.not_found('User not found')
     }
 
     return GetUserResponse{
@@ -681,8 +681,8 @@ pub type Next = fn (mut Context) !Response
 Global middleware:
 
 ```v
-app.use(vesper.logger())
-app.use(vesper.cors())
+app.use(vrpc.logger())
+app.use(vrpc.cors())
 ```
 
 Service-level middleware in generated metadata:
@@ -697,7 +697,7 @@ pub interface UserService {
 If attribute parsing for middleware is too hard in MVP, support explicit service options:
 
 ```v
-users.mount_user_service_with_options(mut app, impl, vesper.ServiceOptions{
+users.mount_user_service_with_options(mut app, impl, vrpc.ServiceOptions{
     middleware: [auth_middleware]
 })!
 ```
@@ -761,13 +761,13 @@ Docs can initially be a static HTML page that loads `/openapi.json`.
 The generator should run as:
 
 ```sh
-v run cmd/vesper generate .
+v run cmd/vrpc generate .
 ```
 
 or, if packaged as a CLI:
 
 ```sh
-vesper generate .
+vrpc generate .
 ```
 
 It should scan for contract files and generate:
@@ -797,26 +797,26 @@ Generated mount function:
 ```v
 module users
 
-import vesper
+import vrpc
 
-pub fn mount_user_service(mut app vesper.App, impl UserServiceImpl) ! {
-    service := vesper.ServiceDef{
+pub fn mount_user_service(mut app vrpc.App, impl UserServiceImpl) ! {
+    service := vrpc.ServiceDef{
         name: 'UserService'
         prefix: '/users'
         procedures: [
-            vesper.ProcedureDef{
+            vrpc.ProcedureDef{
                 name: 'create_user'
                 input_schema: schema_create_user_request()
                 output_schema: schema_create_user_response()
-                transport: vesper.TransportBinding{
+                transport: vrpc.TransportBinding{
                     method: .post
                     path: '/'
                 }
-                handler: fn [impl] (mut ctx vesper.Context) !vesper.Response {
-                    req := vesper.bind_create_user_request(mut ctx)!
-                    vesper.validate_create_user_request(req)!
+                handler: fn [impl] (mut ctx vrpc.Context) !vrpc.Response {
+                    req := vrpc.bind_create_user_request(mut ctx)!
+                    vrpc.validate_create_user_request(req)!
                     res := impl.create_user(req)!
-                    return vesper.json(res)
+                    return vrpc.json(res)
                 }
             },
         ]
@@ -833,11 +833,11 @@ struct UserServiceRuntime {
     impl UserServiceImpl
 }
 
-fn (r UserServiceRuntime) create_user_handler(mut ctx vesper.Context) !vesper.Response {
-    req := vesper.bind_create_user_request(mut ctx)!
-    vesper.validate_create_user_request(req)!
+fn (r UserServiceRuntime) create_user_handler(mut ctx vrpc.Context) !vrpc.Response {
+    req := vrpc.bind_create_user_request(mut ctx)!
+    vrpc.validate_create_user_request(req)!
     res := r.impl.create_user(req)!
-    return vesper.json(res)
+    return vrpc.json(res)
 }
 ```
 
@@ -956,7 +956,7 @@ Generated binder for body structs can call JSON decode, then overlay path/query/
 Pseudo-code:
 
 ```v
-pub fn bind_create_user_request(mut ctx vesper.Context) !CreateUserRequest {
+pub fn bind_create_user_request(mut ctx vrpc.Context) !CreateUserRequest {
     mut req := json.decode(CreateUserRequest, ctx.body)!
 
     return CreateUserRequest{
@@ -1002,7 +1002,7 @@ pub:
 }
 
 pub fn (c Client) create_user(req CreateUserRequest) !CreateUserResponse {
-    http_res := vesper.client.post_json(
+    http_res := vrpc.client.post_json(
         c.base_url + '/users/',
         req
     )!
@@ -1165,14 +1165,14 @@ Client can call example server with typed request/response structs.
 ```v
 module main
 
-import vesper
+import vrpc
 import users
 
 fn main() {
-    mut app := vesper.new()
+    mut app := vrpc.new()
 
-    app.use(vesper.logger())
-    app.use(vesper.cors())
+    app.use(vrpc.logger())
+    app.use(vrpc.cors())
 
     users.mount_user_service(mut app, users.UserServiceImpl{
         repo: users.new_memory_repo()
