@@ -26,10 +26,18 @@ v run cmd/vgen openapi ../examples/users   # print OpenAPI to stdout
 v run ../examples/users
 ```
 
+## Testing
+
+Tests use V’s `v test` runner plus **vtest** helpers in `vtest.v`: named **suites** and **cases**. See [TESTING.md](TESTING.md).
+
+```bash
+cd vrpc && v -cc gcc test .
+```
+
 ## Layout
 
 ```txt
-vrpc/          — runtime library (module vrpc)
+vrpc/          — runtime library (module vrpc); vtest.v = suite/case harness
 cmd/vgen/        — CLI: generate, inspect, openapi; IR + emitters (V, TS)
 examples/        — hello, users
 ```
