@@ -39,7 +39,7 @@ cd vrpc && v install && v -cc gcc test .
 ```txt
 vrpc/            — runtime library (module vrpc)
 cmd/vgen/        — CLI: generate, inspect, openapi; IR + emitters (V, TS)
-examples/        — hello, users
+examples/        — hello, users, htmx (see ../examples/)
 ```
 
 ## Contract → generated

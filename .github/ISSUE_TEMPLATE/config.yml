@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Design brief
+    url: https://github.com/franklinharvey/vrpc/blob/main/brief.md
+    about: Read the contract-first framework design before proposing large changes

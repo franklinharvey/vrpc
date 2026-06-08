@@ -1,0 +1,34 @@
+name: Feature request
+description: Suggest an idea aligned with the contract-first model
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        vrpc is contract-first: services and payloads drive HTTP, OpenAPI, and clients.
+        See [brief.md](https://github.com/franklinharvey/vrpc/blob/main/brief.md) for scope and non-goals.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to build or simplify?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: How might this fit the service → procedure → payload model?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: alignment
+    attributes:
+      label: Alignment
+      options:
+        - label: This fits the contract-first / codegen direction in brief.md
+          required: true
