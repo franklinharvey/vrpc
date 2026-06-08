@@ -1,5 +1,7 @@
 # vrpc
 
+![vrpc — contract-first HTTP for V](.github/social-preview.png)
+
 **Contract-first HTTP service framework for [V](https://vlang.io).**
 
 [![CI](https://github.com/franklinharvey/vrpc/actions/workflows/ci.yml/badge.svg)](https://github.com/franklinharvey/vrpc/actions/workflows/ci.yml)
