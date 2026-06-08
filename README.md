@@ -8,7 +8,7 @@ Contract-first HTTP service framework for [V](https://vlang.io), described in [b
 |------|---------|
 | [TASKS.md](TASKS.md) | Implementation checklist |
 | [vrpc/](vrpc/) | Runtime library + `vgen` codegen CLI |
-| [examples/](examples/) | `hello`, `users` demos |
+| [examples/](examples/) | `hello`, `users`, `htmx` demos |
 
 ## Requirements
 
@@ -43,4 +43,7 @@ v run cmd/vgen generate ../examples/users   # from vrpc/
 
 cd ../examples/users
 v run .
+
+cd ../examples/htmx
+v run .    # open http://127.0.0.1:3002
 ```
